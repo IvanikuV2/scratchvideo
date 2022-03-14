@@ -1,1 +1,0 @@
-This is where the extracted SB3 sits at
