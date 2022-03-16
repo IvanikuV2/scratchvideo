@@ -9,7 +9,7 @@
   "author": "Ivaniku",
   "license": "MIT",
   "dependencies": {
-    "prompt-sync": "^4.2.0",
+    "prompts": "^2.4.2",
     "unzipper": "^0.10.11"
   },
   "devDependencies": {
