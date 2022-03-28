@@ -7,16 +7,37 @@ var prompt = require('prompts');
 const fs = require('fs'); 
 const path = require('path');
 
+// Variable declaring to avoid trouble
 var fps
+var debug
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+}
 
 (async () => {
-    const response = await prompt({
+    let fpsprompt = await prompt({
       type: 'number',
       name: 'value',
       message: 'What will be the video\'s FPS',
     });
-  
-    fps = response.value
+
+    let debugprompt = await prompt({
+        type: 'text',
+        name: 'value',
+        message: 'Do you want to enable optional debugging fetures? (y/N)',
+    });
+
+    if(debugprompt.value == "y"){
+        debug = true
+        console.log('\x1b[33m%s\x1b[0m', "\nWARNING: Debug mode has been enabled, performance may seem affected on lower end devices.")
+        await sleep(4000);
+    }
+
+    fps = fpsprompt.value
+
     unpack()
 })();
 
@@ -60,6 +81,16 @@ function extractframes(){
 
     const extractframe = spawn("ffmpeg", ["-i \"work/projects/video.mp4\"", `-r ${fps} \"work/tmp/frames/frame-%04d.png\"`], { shell: true })
 
+    if(debug == true){
+        extractframe.stdout.on('data', (data) => {
+            console.log(`stdout: ${data}`);
+        });
+          
+        extractframe.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+        });
+    }
+
     extractframe.on('error', (error) => {
         console.log(`error: ${error.message}`);
     });
@@ -83,6 +114,6 @@ function parseimages(){
         //listing all files using forEach
         let images = (fs.readdirSync(directoryPath))
 
-        console.log(files)  
+        if(debug == true) console.log(files) 
     });
 }
