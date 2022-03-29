@@ -1,26 +1,40 @@
+#!/usr/bin/env node
+
 // Dependencies
 const unzipper = require('unzipper');
-const spawn = require("child_process");
-const yargs = require('yargs');
 const fs = require('fs'); 
 const path = require('path');
 const prompt = require('prompts');
-
-// Variable declaring
-var fps = 30
-var debug = false
+const yargs = require('yargs');
+const { spawn } = require("child_process");
+const { hideBin } = require('yargs/helpers')
 
 // Declare CLI arguments
-const argv = yargs
-    .option('noprompts', 'Completely disables command line prompts', {
-        noprompts: {
-            description: 'disable all command line prompts',
-            alias: 'y',
-            type: "boolean",
-        }
+const arguments = yargs(hideBin(process.argv))
+    .option('noprompts', {
+        alias: 'y',
+        type: 'boolean',
+        description: 'Options will automatically be set to defaults if not provided through args'
     })
-    .help()
-    .alias('help', 'h').argv;
+    .option('debug', {
+        alias: 'd',
+        type: 'boolean',
+        description: 'Run in debug mode'
+    })
+    .command('framerate [fps]', 'Set a defined framerate (fps)', (yargs) => {
+        return yargs
+          .positional('fps', {
+            describe: 'Number of frames per second',
+            default: null
+          })
+    })
+    .parse()
+
+// Variable declaring
+var fps = arguments.framerate
+var debug = arguments.d
+
+console.log(arguments.framerate)
 
 function sleep(ms) {
     return new Promise((resolve) => {
@@ -30,32 +44,25 @@ function sleep(ms) {
 
 
 // This code block handles command line arguments and prompts
-if(argv.noprompts) (async () => {
-    let fpsprompt = await prompt({
-      type: 'number',
-      name: 'value',
-      message: 'What will be the video\'s FPS',
-    });
+if(!arguments.noprompts) (async () => {
+    if (fps == null){
+        let fpsprompt = await prompt({
+            type: 'number',
+            name: 'value',
+            message: 'What will be the video\'s FPS',
+        });
 
-    fps = fpsprompt.value
-
-    let debugprompt = await prompt({
-        type: 'text',
-        name: 'value',
-        message: 'Do you want to enable optional debugging fetures? (y/N)',
-    });
-
-    if(debugprompt.value == "y"){
-        debug = true
-        console.log('\x1b[33m%s\x1b[0m', "\nWARNING: Debug mode has been enabled, performance may seem affected on lower end devices.")
-        await sleep(4000);
+        fps = fpsprompt.value
     }
 
+    console.log(`Your video will be exported at ${fps} frames per second`)
+
     unpack()
-})();
+})(); else unpack()
 
 function unpack(){
-    console.log("Cleaning up...")
+    if(debug == true) console.log('\x1b[33m%s\x1b[0m', "\nWARNING: Debug mode has been enabled, performance may seem affected on lower end devices.")
+    console.log("\nCleaning up...")
 
     // this chunk of code cleans up the /tmp directory for future use :P
     const directory = 'work/tmp/extractedProject';
