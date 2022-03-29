@@ -12,20 +12,15 @@ var debug = false
 
 // Declare CLI arguments
 const argv = yargs
-  .command('--no-prompts', 'Completely disables command line prompts and falls back to default values or command line arguments', {
-    noprompts: {
-      description: 'the year to check for',
-      alias: '-y',
-      type: 'number'
-    }
-  })
-  .option('time', {
-    alias: 't',
-    description: 'Tell the present Time',
-    type: 'boolean'
-  })
-  .help()
-  .alias('help', 'h').argv;
+    .option('noprompts', 'Completely disables command line prompts', {
+        noprompts: {
+            description: 'disable all command line prompts',
+            alias: 'y',
+            type: "boolean",
+        }
+    })
+    .help()
+    .alias('help', 'h').argv;
 
 function sleep(ms) {
     return new Promise((resolve) => {
@@ -35,14 +30,7 @@ function sleep(ms) {
 
 
 // This code block handles command line arguments and prompts
-(async () => {
-    switch (myArgs[0]) {
-        case 'insult':
-          console.log(myArgs[1], 'smells quite badly.');
-          break;
-        default:
-          console.log('Sorry, that is not something I know how to do.');
-    }
+if(argv.noprompts) (async () => {
     let fpsprompt = await prompt({
       type: 'number',
       name: 'value',
