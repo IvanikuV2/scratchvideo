@@ -10,7 +10,8 @@
   "license": "MIT",
   "dependencies": {
     "prompts": "^2.4.2",
-    "unzipper": "^0.10.11"
+    "unzipper": "^0.10.11",
+    "yargs": "^17.4.0"
   },
   "devDependencies": {
     "eslint": "^8.11.0"

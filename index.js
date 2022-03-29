@@ -1,15 +1,31 @@
+// Dependencies
 const unzipper = require('unzipper');
-
-const { spawn } = require("child_process");
-
-var prompt = require('prompts');
-
+const spawn = require("child_process");
+const yargs = require('yargs');
 const fs = require('fs'); 
 const path = require('path');
+const prompt = require('prompts');
 
-// Variable declaring to avoid trouble
-var fps
-var debug
+// Variable declaring
+var fps = 30
+var debug = false
+
+// Declare CLI arguments
+const argv = yargs
+  .command('--no-prompts', 'Completely disables command line prompts and falls back to default values or command line arguments', {
+    noprompts: {
+      description: 'the year to check for',
+      alias: '-y',
+      type: 'number'
+    }
+  })
+  .option('time', {
+    alias: 't',
+    description: 'Tell the present Time',
+    type: 'boolean'
+  })
+  .help()
+  .alias('help', 'h').argv;
 
 function sleep(ms) {
     return new Promise((resolve) => {
@@ -17,12 +33,23 @@ function sleep(ms) {
     });
 }
 
+
+// This code block handles command line arguments and prompts
 (async () => {
+    switch (myArgs[0]) {
+        case 'insult':
+          console.log(myArgs[1], 'smells quite badly.');
+          break;
+        default:
+          console.log('Sorry, that is not something I know how to do.');
+    }
     let fpsprompt = await prompt({
       type: 'number',
       name: 'value',
       message: 'What will be the video\'s FPS',
     });
+
+    fps = fpsprompt.value
 
     let debugprompt = await prompt({
         type: 'text',
@@ -35,8 +62,6 @@ function sleep(ms) {
         console.log('\x1b[33m%s\x1b[0m', "\nWARNING: Debug mode has been enabled, performance may seem affected on lower end devices.")
         await sleep(4000);
     }
-
-    fps = fpsprompt.value
 
     unpack()
 })();
