@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const prompt = require('prompts');
 const yargs = require('yargs');
-const { spawn } = require("child_process");
+const ffmpeg = require("ffmpeg-cli");
 const { hideBin } = require('yargs/helpers')
 
 // Declare CLI arguments
@@ -33,8 +33,6 @@ const arguments = yargs(hideBin(process.argv))
 // Variable declaring
 var fps = arguments.framerate
 var debug = arguments.d
-
-console.log(arguments.framerate)
 
 function sleep(ms) {
     return new Promise((resolve) => {
@@ -99,27 +97,7 @@ function extractframes(){
     fs.rmSync("work/tmp/frames", { recursive: true, force: true });
     fs.mkdirSync("work/tmp/frames/")
 
-    const extractframe = spawn("ffmpeg", ["-i \"work/projects/video.mp4\"", `-r ${fps} \"work/tmp/frames/frame-%04d.png\"`], { shell: true })
-
-    if(debug == true){
-        extractframe.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-        });
-          
-        extractframe.stderr.on('data', (data) => {
-            console.error(`stderr: ${data}`);
-        });
-    }
-
-    extractframe.on('error', (error) => {
-        console.log(`error: ${error.message}`);
-    });
-    
-    extractframe.on("close", code => {
-        console.log(`child process exited with code ${code}`);
-        console.log("\nVideo frames successfully extracted!")
-        parseimages()
-    });
+    ffmpeg.runSync("-i \"work/projects/video.mp4\" -r ${fps} \"work/tmp/frames/frame-%04d.png\"")
 }
 
 function parseimages(){
