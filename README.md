@@ -1,3 +1,5 @@
+[Current state of the project](https://github.com/IvanikuV2/scratchvideo/issues/4#issuecomment-1196582267)
+
 # scratchvideo
 Export MP4 files to scratch (SB3) projects 'cuz why not?
 
